@@ -27,15 +27,22 @@
     | Chinese           | Mandarin     | Fluent          |
     | Spanish           | Arab         | Conversational  |
     Then The New Language and New Level should be updated and listed successfully
-    #| Language          | New Language | New Level           |
-    #| Tamil             | Sanskrit     | Native/Bilingual|
-    #| English           | German       | Basic           |
-    #| Chinese           | Mandarin     | Fluent          |
-    #| Spanish           | Arab         | Conversational  |
-
+   
   #   Deleting All language and level
   @Order3
   Scenario: Delete all existing language and level
   When I delete all languages in my profile and successful message should appear
   Then The deleted language should not appear in the list
-  
+
+  Scenario: Duplicate language entries handling
+    When I try to add the following language entries:
+      | DupLanguage | FirstLevel | SecondLevel    | ExpectedMessage                                       |
+      | English  | Basic      | Basic          | This language is already exist in your language list. |
+      | English  | Basic      | Conversational | Duplicated data                                       |
+
+   
+ # #Duplicate values check  while editing language and level
+ #Scenario: Duplicate values checking while editing language and level
+ #When I enter the same language and level which editing language
+ #Then The system should not accept duplicate language and error message should be displayed
+ # 

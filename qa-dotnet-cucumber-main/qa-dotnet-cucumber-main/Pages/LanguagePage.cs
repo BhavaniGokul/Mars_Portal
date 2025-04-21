@@ -28,7 +28,7 @@ namespace qa_dotnet_cucumber.Pages
         private readonly By AddedLanguage = By.XPath("(//table[@class='ui fixed table']//tbody[last()]//tr/td[1])[1]");
         private readonly By AddedLevel = By.XPath("//table[@class='ui fixed table']//tbody[last()]//tr/td[2]");
         private readonly By LanguageAddedMsg = By.XPath("//div[contains(text(),'has been added to your languages')]");
-
+        private readonly By CancelButton = By.XPath("(//input[@type='button'])[2]");
         //Update Locators
         private readonly By LanguageEditButton = By.XPath("(//i[@class='outline write icon'])[2]");
         private readonly By LanguageRow = By.XPath("//table[@class='ui fixed table']/tbody/tr");
@@ -38,6 +38,9 @@ namespace qa_dotnet_cucumber.Pages
         //Delete Locators
         private readonly By LanguageDeleteButton = By.XPath("(//i[@class='remove icon'])");
         private readonly By LanguageDeletedMsg = By.XPath("//div[contains(text(),'has been deleted from your languages')]");
+
+        //Duplicate Language locators
+        private readonly By DupLangErrMsg = By.XPath("//div[@class='ns-box ns-growl ns-effect-jelly ns-type-error ns-show']//div");
 
         // Definining Constructor
         public LanguagePage(IWebDriver driver) // Inject IWebDriver directly
@@ -79,6 +82,16 @@ namespace qa_dotnet_cucumber.Pages
             AddButtonElementClickable.Click();
             Thread.Sleep(3000);
 
+
+
+        }
+
+        public void clickCancelButton()
+        {
+            var CancelButtonElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(CancelButton));
+            var CancelButtonElementClickable = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(CancelButton));
+            CancelButtonElementClickable.Click();
+            Thread.Sleep(3000);
         }
         public string LanguageListing()
         {
@@ -97,6 +110,7 @@ namespace qa_dotnet_cucumber.Pages
         {
             var LangAddedMsg = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(LanguageAddedMsg));
             return LangAddedMsg.Text;
+            
         }
 
         //******Updating existing Language and Level
@@ -206,5 +220,35 @@ namespace qa_dotnet_cucumber.Pages
             return languageRows.Any(); 
         }
 
+
+        //**Checking for duplicates in language field
+        public string DuplicateLanguageErrorMsg()
+        {
+            var DuplicateLangErrMsg = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(DupLangErrMsg));
+            
+            return DuplicateLangErrMsg.Text;
+            
+        }
+        public bool IsDupLanguageAndLevelPresent(string dupLang, string dupLevel)
+        {
+            // Find all rows in the language table
+            var rows = _driver.FindElements(LanguageRow);
+
+            foreach (var row in rows)
+            {
+                var languageCell = row.FindElement(By.XPath("./td[1]"));
+                var levelCell = row.FindElement(By.XPath("./td[2]"));
+
+                // Check if the language and level in the row match the provided values
+                if (languageCell.Text.Trim() == dupLang && levelCell.Text.Trim() == dupLevel)
+                {
+                    return true; // Found the matching language and level
+                    Console.WriteLine("Duplicated data is getting saved");
+                }
+            }
+            Console.WriteLine("Duplicated data is not getting saved and listed as expected");
+            return false;
+            
+        }
     }
 }

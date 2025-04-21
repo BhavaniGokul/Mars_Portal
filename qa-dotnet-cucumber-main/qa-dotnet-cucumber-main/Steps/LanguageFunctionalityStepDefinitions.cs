@@ -103,6 +103,82 @@ namespace qa_dotnet_cucumber.Steps
             Assert.That(languagesExist, Is.False, "Languages are still present in the profile list. Expected all to be deleted.");
 
         }
+        //**Checking duplicates while adding language
+        //Validation #1 Same language and same level
+        //Validation #2 Same language with different level
+
+        [When("I try to add the following language entries:")]
+        public void WhenITryToAddTheFollowingLanguageEntries(Table dupLangCheckTable)
+        {
+            
+            foreach (var row in dupLangCheckTable.Rows)
+            {
+                string dupLanguage = row["DupLanguage"];
+                string firstLevel = row["FirstLevel"];
+                string secondLevel = row["SecondLevel"];
+                string expectedMessage = row["ExpectedMessage"];
+
+                _languagePage.DeleteAllLanguages();
+
+                _languagePage.CreateLanguageLevel(dupLanguage, firstLevel);
+                _languagePage.CreateLanguageLevel(dupLanguage, secondLevel);
+
+                
+                string actualMessage = _languagePage.DuplicateLanguageErrorMsg();
+                _languagePage.clickCancelButton(); 
+                Console.WriteLine("Message displayed: " + actualMessage);
+
+                Assert.That(actualMessage == expectedMessage,
+                    $"Expected message '{expectedMessage}', but got '{actualMessage}' for {dupLanguage} with {secondLevel} level.");
+            }
+        }
+
+
+        //[When("I try to add the same language and same level")]
+        //public void WhenITryToAddTheSameLanguageAndSameLevel()
+        //{
+        //    _languagePage.DeleteAllLanguages();
+        //    _languagePage.CreateLanguageLevel("English", "Basic");
+        //    _languagePage.CreateLanguageLevel("English", "Basic");
+
+        //}
+
+        //[Then("This language is already exist in your language list should be displayed")]
+        //public void ThenThisLanguageIsAlreadyExistInYourLanguageListShouldBeDisplayed()
+        //{
+        //    string DupLangMsg = _languagePage.DuplicateLanguageErrorMsg();
+        //    Console.Write("Message displayed:" + DupLangMsg);
+        //    Assert.That(DupLangMsg == "This language is already exist in your language list.", "Duplicate language is getting added");
+
+        //    _languagePage.IsDupLanguageAndLevelPresent("English", "Basic");
+        //}
+
+        //[When("I try to add the same language and different level")]
+        //public void WhenITryToAddTheSameLanguageAndDifferentLevel()
+        //{
+        //    _languagePage.DeleteAllLanguages();
+        //    _languagePage.CreateLanguageLevel("English", "Basic");
+        //    _languagePage.CreateLanguageLevel("English", "Conversational");
+
+        //}
+
+        //[Then("Error message duplicated language should be displayed")]
+        //public void ThenErrorMessageDuplicatedLanguageShouldBeDisplayed()
+        //{
+        //    string DupLangMsg = _languagePage.DuplicateLanguageErrorMsg();
+        //    Console.Write("Message displayed:" + DupLangMsg);
+        //    Assert.That(DupLangMsg == "Duplicated data", "Duplicate language is getting added");
+        //    _languagePage.IsDupLanguageAndLevelPresent("English", "Conversational");
+        //}
+
+
+        //[When("I enter the same language and level which editing language")]
+        //public void WhenIEnterTheSameLanguageAndLevelWhichEditingLanguage()
+        //{
+        //    _languagePage.UpdateLanguageAndLevel("English", "English", "Basic");
+
+        //}
+
 
     }
 }
