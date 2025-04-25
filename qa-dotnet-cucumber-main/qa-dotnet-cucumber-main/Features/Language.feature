@@ -34,15 +34,19 @@
   When I delete all languages in my profile and successful message should appear
   Then The deleted language should not appear in the list
 
+  #Duplicate values check  while adding language and level
   Scenario: Duplicate language entries handling
     When I try to add the following language entries:
       | DupLanguage | FirstLevel | SecondLevel    | ExpectedMessage                                       |
-      | English  | Basic      | Basic          | This language is already exist in your language list. |
-      | English  | Basic      | Conversational | Duplicated data                                       |
+      | English     | Basic      | Basic          | This language is already exist in your language list. |
+      | English     | Basic      | Conversational | Duplicated data    |
 
+  Scenario: Duplicate language check with change of case
+    When I try to add the same langauge with change of case
+    Then The language should not be added and listed
    
- # #Duplicate values check  while editing language and level
+ # Duplicate values check  while editing language and level
  #Scenario: Duplicate values checking while editing language and level
  #When I enter the same language and level which editing language
  #Then The system should not accept duplicate language and error message should be displayed
- # 
+ 

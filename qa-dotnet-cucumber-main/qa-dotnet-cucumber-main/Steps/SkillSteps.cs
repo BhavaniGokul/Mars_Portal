@@ -56,7 +56,7 @@ namespace qa_dotnet_cucumber.Steps
         [When("I update an Existing Skill and Existing Level in my profile")]
         public void WhenIUpdateAnExistingSkillAndExistingLevelInMyProfile(Table updateSkilltable)
         {
-            var updatedSkills = new List<(string newLang, string newLevel, string successMsg)>();
+            var updatedSkills = new List<(string newSkill, string newLevel, string successMsg)>();
 
             foreach (var row in updateSkilltable.Rows)
             {
@@ -98,11 +98,67 @@ namespace qa_dotnet_cucumber.Steps
         [Then("The deleted skills should not appear in the list")]
         public void ThenTheDeletedSkillsShouldNotAppearInTheList()
         {
-            bool languagesExist = _skillPage.AreSkillsPresent();
+            
+            bool skillsExist = _skillPage.AreSkillsPresent();
 
-            Assert.That(languagesExist, Is.False, "Languages are still present in the profile list. Expected all to be deleted.");
+            Assert.That(skillsExist, Is.False, "Skills are still present in the profile list. Expected all to be deleted.");
 
         }
+
+        [When("I try to add the following skill entries:")]
+        public void WhenITryToAddTheFollowingSkillEntries(Table dupSkillCheckTable)
+        {
+            foreach (var row in dupSkillCheckTable.Rows)
+            {
+                string dupSkill = row["DupSkill"];
+                string firstLevel = row["FirstLevel"];
+                string secondLevel = row["SecondLevel"];
+                string expectedMessage = row["ExpectedMessage"];
+
+                _skillPage.DeleteAllSkills();
+
+                _skillPage.CreateSkillLevel(dupSkill, firstLevel);
+                _skillPage.CreateSkillLevel(dupSkill, secondLevel);
+
+
+                string actualMessage = _skillPage.DuplicateSkillErrorMsg();
+                _skillPage.clickCancelButton();
+                Console.WriteLine("Message displayed: " + actualMessage);
+
+                Assert.That(actualMessage == expectedMessage,
+                    $"Expected message '{expectedMessage}', but got '{actualMessage}' for {dupSkill} with {secondLevel} level.");
+            }
+        }
+
+        [When("I try to add the same skill with change of case")]
+        public void WhenITryToAddTheSameSkillWithChangeOfCase()
+        {
+            _skillPage.DeleteAllSkills();
+            _skillPage.CreateSkillLevel("Java", "Expert");
+            _skillPage.CreateSkillLevel("java", "Expert");
+
+            string actualMessage = _skillPage.DuplicateSkillErrorMsg();
+            _scenarioContext["ActualErrorMessage"] = actualMessage;
+
+        }
+
+        [Then("The skill should not be added and listed")]
+        public void ThenTheSkillShouldNotBeAddedAndListed()
+        {
+            string actualMessage = _scenarioContext["ActualErrorMessage"] as string;
+            bool isDuplicate = _skillPage.IsDupSkillAndLevelPresent("java", "Expert");
+
+            string errorMessage = actualMessage;
+
+            // Combine both assertions with a custom message
+            Assert.Multiple(() =>
+            {
+                Assert.That(isDuplicate, Is.False, "Duplicated skill and level is getting added, but it shouldn't be.");
+                Assert.That(errorMessage, Is.EqualTo("This skill is already exist in your skill list."),
+                            "The error message for duplicate skill is incorrect.");
+            });
+        }
+
 
     }
 }

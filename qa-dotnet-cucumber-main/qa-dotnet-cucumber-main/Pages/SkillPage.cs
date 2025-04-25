@@ -31,6 +31,7 @@ namespace qa_dotnet_cucumber.Pages
         private readonly By AddedSkill = By.XPath("(//table[@class='ui fixed table']//tbody[last()]//tr/td[1])[1]");
         private readonly By AddedLevel = By.XPath("//table[@class='ui fixed table']//tbody[last()]//tr/td[2]");
         private readonly By SkillAddedMsg = By.XPath("//div[contains(text(),'has been added to your skills')]");
+        private readonly By CancelButton = By.XPath("(//input[@type='button'])[2]");
 
         //Update Locators
         private readonly By SkillEditButton = By.XPath("(//i[@class='outline write icon'])[2]");
@@ -40,7 +41,13 @@ namespace qa_dotnet_cucumber.Pages
 
         //Delete Locators
         private readonly By SkillDeleteButton = By.XPath("(//i[@class='remove icon'])");
-        private readonly By SkillDeletedMsg = By.XPath("//div[contains(text(),'has been deleted from your skills')]");
+        //private readonly By SkillDeletedMsg = By.XPath("//div[contains(text(),'has been deleted from your skills')]");
+        private readonly By SkillDeletedMsg = By.XPath("//div[@class='ns-box ns-growl ns-effect-jelly ns-type-error ns-show']//div");
+
+        //Duplicate Skill locators
+        //private readonly By DupSkillErrMsg = By.XPath("//div[@class='ns-box ns-growl ns-effect-jelly ns-type-error ns-show']//div");
+        private readonly By DupSkillErrMsg = By.XPath("//div[@class='ns-box-inner']");
+
 
         // Definining Constructor
         public SkillPage(IWebDriver driver) // Inject IWebDriver directly
@@ -96,6 +103,13 @@ namespace qa_dotnet_cucumber.Pages
             AddButtonElementClickable.Click();
             Thread.Sleep(2000);
 
+        }
+        public void clickCancelButton()
+        {
+            var CancelButtonElement = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(CancelButton));
+            var CancelButtonElementClickable = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(CancelButton));
+            CancelButtonElementClickable.Click();
+            Thread.Sleep(3000);
         }
         public string SkillListing()
         {
@@ -177,7 +191,7 @@ namespace qa_dotnet_cucumber.Pages
                 var skillCell = row.FindElement(By.XPath("./td[1]"));
                 var levelCell = row.FindElement(By.XPath("./td[2]"));
 
-                // Check if the language and level in the row match the provided values
+                // Check if the skill and level in the row match the provided values
                 if (skillCell.Text.Trim() == skill && levelCell.Text.Trim() == level)
                 {
                     return true; // Found the matching skill and level
@@ -192,27 +206,35 @@ namespace qa_dotnet_cucumber.Pages
         //*******Deleting SKill and Level
         public void DeleteAllSkills()
         {
-            try
+            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            while (true)
             {
-                while (true)
+                var deleteButtons = _driver.FindElements(SkillDeleteButton);
+
+                if (deleteButtons.Count == 0)
                 {
-                    var deleteButtons = _driver.FindElements(SkillDeleteButton);
-
-                    if (deleteButtons.Count == 0)
-                    {
-                        Console.WriteLine("All skills have been deleted.");
-                        break;
-                    }
-
-                    // Click the first delete button
-                    deleteButtons[0].Click();
-
-                    Thread.Sleep(2000);
+                    Console.WriteLine("All skills are deleted.");
+                    break;
                 }
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail("An error occurred while trying to delete skills: " + ex.Message);
+                int initialCount = deleteButtons.Count;
+                try
+                {
+
+                    wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(deleteButtons[0]));
+                    deleteButtons[0].Click();
+                    wait.Until(driver =>
+                    {
+                        var newDeleteButtons = driver.FindElements(SkillDeleteButton);
+                        return newDeleteButtons.Count < initialCount;
+                    });
+
+                    Thread.Sleep(500);
+                }
+                catch (WebDriverTimeoutException ex)
+                {
+                    Console.WriteLine("Timeout waiting for delete action to complete: " + ex.Message);
+                    break;
+                }
             }
         }
 
@@ -220,6 +242,37 @@ namespace qa_dotnet_cucumber.Pages
         {
             var skillRows = _wait.Until(d => d.FindElements(SkillRow));
             return skillRows.Any();
+        }
+
+        //**Checking for duplicates in skill field
+        public string DuplicateSkillErrorMsg()
+        {
+            var DuplicateSkillErrMsg = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(DupSkillErrMsg));
+
+            return DuplicateSkillErrMsg.Text;
+
+        }
+        public bool IsDupSkillAndLevelPresent(string dupSkill, string dupLevel)
+        {
+            // Find all rows in the skill table
+            var rows = _driver.FindElements(SkillRow);
+
+            foreach (var row in rows)
+            {
+                var skillCell = row.FindElement(By.XPath("./td[1]"));
+                var levelCell = row.FindElement(By.XPath("./td[2]"));
+
+                // Check if the skill and level in the row match the provided values
+                if (skillCell.Text.Trim().Equals(dupSkill, StringComparison.OrdinalIgnoreCase) &&
+    levelCell.Text.Trim().Equals(dupLevel, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"{skillCell.Text}, {levelCell.Text} - Duplicated data is getting saved");
+                    return true;
+                }
+            }
+            Console.WriteLine("Duplicated data is not getting saved and listed as expected");
+            return false;
+
         }
 
     }
