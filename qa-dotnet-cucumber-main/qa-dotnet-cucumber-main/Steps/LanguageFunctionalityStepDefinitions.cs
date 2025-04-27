@@ -162,5 +162,41 @@ namespace qa_dotnet_cucumber.Steps
             });
 
         }
+        //**Language and Level field validation
+        [When("I try to add a language without language or level")]
+        public void WhenITryToAddALanguageWithoutLanguageOrLevel(Table fieldvalidationTable)
+        {
+            foreach (var row in fieldvalidationTable.Rows)
+            {
+                string language = row["Language"];
+                string level = row["Level"];
+
+                _languagePage.CreateLanguageLevel(language, level);
+                _languagePage.CreateLanguageLevel(language, level);
+
+
+                string actualMessage = _languagePage.LangLevelFieldValidationErrMsg();
+                _scenarioContext["ActualErrorMessage"] = actualMessage;
+               // Console.WriteLine("Message displayed: " + actualMessage);
+                _languagePage.clickCancelButton();
+                
+
+            }
+        }
+
+        [Then("Please enter language and level should be displayed")]
+        public void ThenPleaseEnterLanguageAndLevelShouldBeDisplayed()
+        {
+            string actualMessage = _scenarioContext["ActualErrorMessage"] as string;
+            //bool isDuplicate = _languagePage.IsDupLanguageAndLevelPresent("english", "Basic");
+
+            string errorMessage = actualMessage;
+            Assert.That(errorMessage, Is.EqualTo("Please enter language and level"),
+                            "The error message for field validation is incorrect.");
+
+            
+
+        }
+
     }
 }

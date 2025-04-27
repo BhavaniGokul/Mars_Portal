@@ -262,5 +262,14 @@ namespace qa_dotnet_cucumber.Pages
             return false;
             
         }
+
+        //**Language and Level field validation
+        public string LangLevelFieldValidationErrMsg()
+        {
+            var ValidationErrMsg = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(DupLangErrMsg));
+
+            return ValidationErrMsg.Text;
+
+        }
     }
 }

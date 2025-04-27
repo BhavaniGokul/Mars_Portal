@@ -45,8 +45,10 @@
     When I try to add the same langauge with change of case
     Then The language should not be added and listed
    
- # Duplicate values check  while editing language and level
- #Scenario: Duplicate values checking while editing language and level
- #When I enter the same language and level which editing language
- #Then The system should not accept duplicate language and error message should be displayed
- 
+ Scenario: Language or Level field should not be empty
+ When I try to add a language without language or level
+ | Language | Level                 |
+ |          | Choose Language Level |
+ | English  | Choose Language Level |
+ |          | Basic                 |
+ Then Please enter language and level should be displayed
