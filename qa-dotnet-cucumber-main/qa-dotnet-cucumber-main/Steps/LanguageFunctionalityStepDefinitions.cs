@@ -172,7 +172,7 @@ namespace qa_dotnet_cucumber.Steps
                 string level = row["Level"];
 
                 _languagePage.CreateLanguageLevel(language, level);
-                _languagePage.CreateLanguageLevel(language, level);
+               
 
 
                 string actualMessage = _languagePage.LangLevelFieldValidationErrMsg();

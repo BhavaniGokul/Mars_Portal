@@ -275,5 +275,14 @@ namespace qa_dotnet_cucumber.Pages
 
         }
 
+        //**Skill and Level field validation
+        public string SkillLevelFieldValidationErrMsg()
+        {
+            var ValidationErrMsg = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(DupSkillErrMsg));
+
+            return ValidationErrMsg.Text;
+
+        }
+
     }
 }

@@ -160,6 +160,38 @@ namespace qa_dotnet_cucumber.Steps
         }
 
 
+        [When("I try to add a skill without skill or level")]
+        public void WhenITryToAddASkillWithoutSkillOrLevel(Table fieldvalidationTable)
+        {
+            foreach (var row in fieldvalidationTable.Rows)
+            {
+                string language = row["Skill"];
+                string level = row["Level"];
+
+                _skillPage.CreateSkillLevel(language, level);
+
+
+
+                string actualMessage = _skillPage.SkillLevelFieldValidationErrMsg();
+                _scenarioContext["ActualErrorMessage"] = actualMessage;
+                // Console.WriteLine("Message displayed: " + actualMessage);
+                _skillPage.clickCancelButton();
+
+
+            }
+        }
+
+        [Then("Please enter skill and level should be displayed")]
+        public void ThenPleaseEnterSkillAndLevelShouldBeDisplayed()
+        {
+            string actualMessage = _scenarioContext["ActualErrorMessage"] as string;
+          
+            string errorMessage = actualMessage;
+            Assert.That(errorMessage, Is.EqualTo("Please enter skill and experience level"),
+                            "The error message for field validation is incorrect.");
+        }
+
+
     }
 }
 

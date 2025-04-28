@@ -45,4 +45,12 @@
   Scenario: Duplicate skill check with change of case
     When I try to add the same skill with change of case
     Then The skill should not be added and listed
+
+    Scenario: Skill or Level field should not be empty
+ When I try to add a skill without skill or level
+ | Skill | Level              |
+ |       | Choose Skill Level |
+ | Java  | Choose Skill Level |
+ |       | Beginner           |
+ Then Please enter skill and level should be displayed
   
