@@ -56,6 +56,10 @@ namespace qa_dotnet_cucumber.Steps
         [When("I update an Existing Skill and Existing Level in my profile")]
         public void WhenIUpdateAnExistingSkillAndExistingLevelInMyProfile(Table updateSkilltable)
         {
+            _skillPage.DeleteAllSkills();
+            _skillPage.CreateSkillLevel("Java", "Expert");
+            _skillPage.CreateSkillLevel("Python", "Beginner");
+
             var updatedSkills = new List<(string newSkill, string newLevel, string successMsg)>();
 
             foreach (var row in updateSkilltable.Rows)
@@ -125,10 +129,24 @@ namespace qa_dotnet_cucumber.Steps
                 _skillPage.clickCancelButton();
                 Console.WriteLine("Message displayed: " + actualMessage);
 
-                Assert.That(actualMessage == expectedMessage,
-                    $"Expected message '{expectedMessage}', but got '{actualMessage}' for {dupSkill} with {secondLevel} level.");
+                _scenarioContext["ExpectedMessage"] = expectedMessage;
+                _scenarioContext["ActualMessage"] = actualMessage;
+                
             }
         }
+
+        [Then("Expected Message should be displayed")]
+        public void ThenExpectedMessageShouldBeDisplayed()
+        {
+            string actualMessage = _scenarioContext["ActualMessage"] as string;
+            string expectedMessage = _scenarioContext["ExpectedMessage"] as string;
+
+            Assert.That(actualMessage, Is.EqualTo(expectedMessage),
+                $"Expected message '{expectedMessage}', but got '{actualMessage}'.");
+
+
+        }
+
 
         [When("I try to add the same skill with change of case")]
         public void WhenITryToAddTheSameSkillWithChangeOfCase()

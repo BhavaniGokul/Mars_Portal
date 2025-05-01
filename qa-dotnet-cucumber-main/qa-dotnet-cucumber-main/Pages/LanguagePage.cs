@@ -96,6 +96,17 @@ namespace qa_dotnet_cucumber.Pages
             CancelButtonElementClickable.Click();
             Thread.Sleep(3000);
         }
+        public bool IsCancelButtonPresent()
+        {
+            try
+            {
+                return _driver.FindElement(CancelButton).Displayed;
+            }
+            catch (NoSuchElementException)
+            {
+                return false;
+            }
+        }
         public string LanguageListing()
         {
             var SavedLanguage = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(AddedLanguage));
@@ -120,6 +131,7 @@ namespace qa_dotnet_cucumber.Pages
 
         public void UpdateLanguageAndLevel(string language, string newLanguage, string newLevel)
         {
+            
             try
             {
                 // Find all rows in the table body
@@ -215,7 +227,7 @@ namespace qa_dotnet_cucumber.Pages
                         return newDeleteButtons.Count < initialCount;
                     });
 
-                    Thread.Sleep(500);
+                   // Thread.Sleep(500);
                 }
                 catch (WebDriverTimeoutException ex)
                 {

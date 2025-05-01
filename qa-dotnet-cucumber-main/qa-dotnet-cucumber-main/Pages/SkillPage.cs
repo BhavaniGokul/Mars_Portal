@@ -40,7 +40,7 @@ namespace qa_dotnet_cucumber.Pages
 
 
         //Delete Locators
-        private readonly By SkillDeleteButton = By.XPath("(//i[@class='remove icon'])");
+        private readonly By SkillDeleteButton = By.XPath("//div[@data-tab='second']//i[@class='remove icon']");
         //private readonly By SkillDeletedMsg = By.XPath("//div[contains(text(),'has been deleted from your skills')]");
         private readonly By SkillDeletedMsg = By.XPath("//div[@class='ns-box ns-growl ns-effect-jelly ns-type-error ns-show']//div");
 

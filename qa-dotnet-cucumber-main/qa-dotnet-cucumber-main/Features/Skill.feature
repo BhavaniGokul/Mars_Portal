@@ -21,11 +21,9 @@
   @Order2
   Scenario: Update the existing skill and level with valid data
     When I update an Existing Skill and Existing Level in my profile
-    | Skill              | New Skill          | New Level    |
-    | Selenium           | Selenium           | Intermediate |
-    | Functional Testing | Manual Testing     | Expert       |
-    | GitHub             | Jenkins            | Beginner     |
-    | API Testing        | Automation Testing | Expert       |
+    | Skill  | New Skill  | New Level    |
+    | Java   | C#         | Intermediate |
+    | Python | TypeScript | Expert       |
     Then The New Skill and New Level should be updated and listed successfully
    
 
@@ -41,16 +39,19 @@
       | DupSkill | FirstLevel | SecondLevel    | ExpectedMessage                                       |
       | Java     | Intermediate      | Intermediate          | This skill is already exist in your skill list. |
       | Java     | Intermediate      | Expert | Duplicated data    |
-
-  Scenario: Duplicate skill check with change of case
+ Then Expected Message should be displayed
+ Scenario: Duplicate skill check with change of case
     When I try to add the same skill with change of case
     Then The skill should not be added and listed
 
-    Scenario: Skill or Level field should not be empty
+    #Skill Field Validation
+Scenario: Skill or Level field should not be empty
  When I try to add a skill without skill or level
  | Skill | Level              |
  |       | Choose Skill Level |
  | Java  | Choose Skill Level |
  |       | Beginner           |
  Then Please enter skill and level should be displayed
+
+ 
   
