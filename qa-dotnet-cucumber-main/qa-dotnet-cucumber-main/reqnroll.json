@@ -1,9 +1,12 @@
 {
-  "stepAssemblies": [],
-  "execution": {
-    "parallelExecution": {
-      "enabled": true,
-      "maxParallelThreads": 0
-     }
-  }
+    "stepAssemblies": [],
+    "execution": {
+        "parallelExecution": {
+            "enabled": true,
+            "maxParallelThreads": 4
+        }
+    },
+    "runtime": {
+        "multiThreadedExecution": true
+    }
 }

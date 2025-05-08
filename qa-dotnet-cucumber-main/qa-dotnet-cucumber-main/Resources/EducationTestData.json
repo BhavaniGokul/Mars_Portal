@@ -1,0 +1,25 @@
+{
+  "educationData": [
+    {
+      "University": "ABC University",
+      "Country": "India",
+      "Title": "BArch",
+      "Degree": "Design",
+      "Year": "2002"
+    },
+    {
+      "University": "CBD University",
+      "Country": "Albania",
+      "Title": "Associate",
+      "Degree": "English",
+      "Year": "2005"
+    },
+    {
+      "University": "ABC University",
+      "Country": "India",
+      "Title": "B.Tech",
+      "Degree": "Design",
+      "Year": "2007"
+    }
+  ]
+}
